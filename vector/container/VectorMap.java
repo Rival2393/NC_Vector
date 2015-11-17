@@ -1,12 +1,8 @@
 package vector.container;
 
 import vector.Vector;
-import vector.impl.ArrayVector;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Dima on 14.11.2015.
@@ -14,8 +10,8 @@ import java.util.Set;
 public class VectorMap implements Map {
 
     class Entry implements Map.Entry{
-        int key;
-        Vector value;
+        private Object key;
+        private Vector value;
 
         Entry(Object key, Object value){
             this.key = (int) key;
@@ -56,34 +52,37 @@ public class VectorMap implements Map {
     @Override
     public boolean containsKey(Object key) {
         for(Entry element : data)
-            if(key.equals(element.key)) return true;
+            if((key == null && element.getKey() == null) ||
+                    (key != null && element.getKey().equals(key))) return true;
         return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        for(Entry element : data){
-            if(value == null && element.value == null) return true;
-            else if(value != null && value.equals(element.value)) return true;
-        }
+        for(Entry element : data)
+            if((value == null && element.getValue() == null) ||
+                    (value != null && value.equals(element.value))) return true;
         return false;
     }
 
     @Override
     public Object get(Object key) {
         for(Entry element : data)
-            if(key.equals(element.key)) return element.value;
+            if((key == null && element.getKey() == null) ||
+                    (key != null && element.getKey().equals(key))) return element.getValue();
         return null;
     }
 
     @Override
     public Object put(Object key, Object value) {
-        for(Entry element : data)
-            if(key.equals(element.key)){
+        for(Entry element : data) {
+            if ((key == null && element.getKey() == null) ||
+                    (key != null && key.equals(element.key))) {
                 Vector oldValue = element.value;
                 element.value = (Vector) value;
                 return oldValue;
             }
+        }
         data = Arrays.copyOf(data, data.length + 1);
         data[data.length-1] = new Entry(key, value);
         return null;
@@ -93,23 +92,28 @@ public class VectorMap implements Map {
     public Object remove(Object key) {
         if(this.containsKey(key)){
             Entry[] newData = new Entry[data.length-1];
-            Vector oldValue = new ArrayVector(0);
+            Vector oldValue;
             for(int i = 0; i < data.length; i++){
-                System.arraycopy(data, 0, newData, 0, i);
-                if(key.equals(data[i].key)){
-                    oldValue = (Vector) data[i].value.clone();
-                    System.arraycopy(data, i+1, data, i, size() - i - 1);
+                if(!(key == null && data[i].getKey() == null) ||
+                        !(key != null && data[i].getKey().equals(key)))
+                    newData[i] = data[i];
+                else{
+                    oldValue = (Vector) data[i].getValue();
+                    for(int j = i + 1; j < data.length; i++, j++)
+                        newData[i] = data[j];
+                    return oldValue;
                 }
-                else newData[i] = data[i];
             }
-            return oldValue;
         }
         return null;
     }
 
     @Override
     public void putAll(Map m) {
-
+        Set<Entry> incoming = m.entrySet();
+        for(Entry element : incoming){
+            this.put(element.getKey(), element.getValue());
+        }
     }
 
     @Override
@@ -119,16 +123,25 @@ public class VectorMap implements Map {
 
     @Override
     public Set keySet() {
-        return null;
+        Set<Object> set = new HashSet<>();
+        for(Entry element : data)
+            set.add(element.getKey());
+        return set;
     }
 
     @Override
     public Collection values() {
-        return null;
+        Collection collection = new VectorCollection();
+        for(Entry element : data)
+            collection.add(element.getValue());
+        return collection;
     }
 
     @Override
     public Set<Entry> entrySet() {
-        return null;
+        Set<Entry> set = new HashSet<Entry>();
+        for(Entry element : data)
+            set.add(element);
+        return set;
     }
 }
