@@ -14,7 +14,7 @@ public class VectorMap implements Map {
         private Vector value;
 
         Entry(Object key, Object value){
-            this.key = (int) key;
+            this.key = key;
             this.value = (Vector) value;
         }
 
@@ -36,7 +36,7 @@ public class VectorMap implements Map {
         }
     }
 
-    Entry[] data = new Entry[0];
+    public Entry[] data = new Entry[0];
 
     @Override
     public int size() {
@@ -90,21 +90,16 @@ public class VectorMap implements Map {
 
     @Override
     public Object remove(Object key) {
-        if(this.containsKey(key)){
-            Entry[] newData = new Entry[data.length-1];
-            Vector oldValue;
-            for(int i = 0; i < data.length; i++){
-                if(!(key == null && data[i].getKey() == null) ||
-                        !(key != null && data[i].getKey().equals(key)))
-                    newData[i] = data[i];
-                else{
-                    oldValue = (Vector) data[i].getValue();
-                    for(int j = i + 1; j < data.length; i++, j++)
-                        newData[i] = data[j];
-                    return oldValue;
-                }
+        Entry[] newData = new Entry[data.length-1];
+        Object oldValue;
+        for (int i = 0; i < size(); i++)
+            if((key == null && data[i].getKey() == null) || key != null && key.equals(data[i].getKey())){
+                oldValue = data[i].getValue();
+                System.arraycopy(data, 0, newData, 0, i);
+                System.arraycopy(data, i+1, newData, i, size()-i-1);
+                data = newData;
+                return oldValue;
             }
-        }
         return null;
     }
 

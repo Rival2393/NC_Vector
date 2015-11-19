@@ -54,17 +54,11 @@ public class VectorCollection implements Collection
 
     @Override
     public Object[] toArray(Object[] a) {
-        if(a instanceof Vector[]){
-            for (int i = 0; i < data.length; i++)
-                a[i] = data[i];
-            return a;
-        }
-        else{
-            a = new Vector[data.length];
-            for (int i = 0; i < data.length; i++)
-                a[i] = data[i];
-            return a;
-        }
+        if(a instanceof Vector[] && a.length >= data.length)
+            System.arraycopy(data, 0, a, 0, data.length);
+        else
+            a = data.clone();
+        return a;
     }
 
     @Override
@@ -80,20 +74,14 @@ public class VectorCollection implements Collection
     @Override
     public boolean remove(Object o) {
         if (o instanceof Vector || o == null){
-            if(this.contains(o)){
-                Vector[] temp = new Vector[data.length-1];
-                for (int i = 0; i < temp.length; i++){
-                    if(o != data[i])
-                        temp[i] = data[i];
-                    else if (o == data[i]) {
-                        for(int j = i+1; j < data.length; i++, j++)
-                            temp[i] = data[j];
-                        break;
-                    }
+            for (int i = 0; i < size(); i++)
+                if((o == null && data[i] == null) || (o != null && o.equals(data[i]))){
+                    Vector[] newData = new Vector[size()-1];
+                    System.arraycopy(data, 0, newData, 0, i);
+                    System.arraycopy(data, i+1, newData, i, size()-i-1);
+                    data = newData;
+                    return true;
                 }
-                data = temp.clone();
-                return true;
-            }
         }
         return false;
     }
@@ -111,45 +99,32 @@ public class VectorCollection implements Collection
     @Override
     public boolean addAll(Collection c) {
         Object[] arr = c.toArray();
-        boolean res = false;
-        for(Object element : arr)
-            res = this.add(element);
-        return res;
+        int counter = 0;
+        for(Object element : arr){
+            this.add(element);
+            counter++;
+        }
+        if(counter > 0)return true;
+        else return false;
     }
 
     @Override
     public boolean removeAll(Collection c) {
-        if (c == null || c instanceof VectorCollection){
-            Vector[] arr = (Vector[]) c.toArray();
-            VectorCollection newOne = new VectorCollection();
-            for(int i = 0; i < data.length; i++)
-                for(int j = 0; j < arr.length; j++){
-                    if(arr[j] == null && arr[j] == data[i]) break;
-                    else if (arr[j] !=null && arr[j].equals(data[i])) break;
-                    else{
-                        if(j == arr.length-1) newOne.add(data[i]);
-                    }
-                }
-            data = (Vector[]) newOne.toArray();
-            return true;
-        }
-        return false;
+        Vector[] arr = (Vector[]) c.toArray();
+        boolean result = false;
+        for(Vector element : arr)
+            if(remove(element)) result = true;
+        return result;
     }
 
     @Override
     public boolean retainAll(Collection c) {
-        if (c == null || c instanceof VectorCollection){
-            Vector[] arr = (Vector[]) c.toArray();
-            VectorCollection newOne = new VectorCollection();
-            for(int i = 0; i < data.length; i++)
-                for(int j = 0; j < arr.length; j++){
-                    if(arr[j] == null && data[i] == null) newOne.add(data[i]);
-                    else if(arr[j] != null && arr[j].equals(data[i])) newOne.add(data[i]);
-                }
-            data = (Vector[]) newOne.toArray();
-            return true;
+        int counter = 0;
+        for(int i = 0; i < data.length; i++){
+            if(!c.contains(data[i]))
+                if(remove(data[i])) counter++;
         }
-        return false;
+        return (counter>0);
     }
 
     @Override

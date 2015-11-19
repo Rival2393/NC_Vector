@@ -102,6 +102,16 @@ public class VectorCollectionTest {
         System.out.println();
     }
 
+    @Test
+    public void testToArray2(){
+        Object[] expected = new Object[collection.size()];
+        expected = collection.toArray(expected);
+        Object[] mass;
+        mass = collection.toArray();
+        for(Object element : expected)
+            System.out.println(element);
+        //Assert.assertEquals(mass, expected);
+    }
 
     @Test
     public void testAdd(){
@@ -187,19 +197,17 @@ public class VectorCollectionTest {
     public void testRetainAll(){
         VectorCollection toRetain = new VectorCollection();
         Assert.assertTrue(collection.size() == 5);
+        collection.add(vector2);
         collection.add(vector4);
-        collection.add(null);
-        Assert.assertTrue(collection.size() == 7);
-        toRetain.add(vector1);
+        toRetain.add(vector2);
         toRetain.add(vector4);
-        toRetain.add(null);
         collection.retainAll(toRetain);
+        Assert.assertTrue(collection.size() == 4);
         Object[] mass = collection.toArray();
-        Assert.assertEquals(mass[0], vector1);
+        Assert.assertEquals(mass[0], vector2);
         Assert.assertEquals(mass[1], vector4);
-        Assert.assertEquals(mass[2], null);
-        for (Object o : mass)
-            System.out.println(o);
+        Assert.assertEquals(mass[2], vector2);
+        Assert.assertEquals(mass[3], vector4);
     }
 
     @Test

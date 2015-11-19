@@ -1,8 +1,5 @@
 package vector.container;
 
-import vector.Vector;
-
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -15,16 +12,5 @@ public class VectorSet extends VectorCollection implements Set {
             return super.add(o);
         }
         return false;
-    }
-
-    public boolean addAll(Collection c){
-        Vector[] arr = (Vector[]) c.toArray();
-        int counter = 0;
-        for(Vector element : arr){
-            this.add(element);
-            counter++;
-        }
-        if(counter > 0)return true;
-        else return false;
     }
 }
