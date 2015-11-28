@@ -88,7 +88,7 @@ public class VectorCollection implements Collection
 
     @Override
     public boolean containsAll(Collection c) {
-        Vector[] arr = (Vector[]) c.toArray();
+        Object[] arr = c.toArray();
         int counter = 0;
         for(int i = 0; i < arr.length; i++)
             if(this.contains(arr[i])) counter++;
