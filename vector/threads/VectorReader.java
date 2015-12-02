@@ -17,11 +17,11 @@ public class VectorReader<E extends Vector> extends Thread {
     public void run() {
         for(int i = 0; i < vector.getSize(); i++){
             System.out.println("Read: " + vector.getElement(i) + " from position " + i + '\n');
-            try {
+            /*try {
                 sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 }

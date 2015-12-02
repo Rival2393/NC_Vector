@@ -20,11 +20,11 @@ public class VectorWriter<E extends Vector> extends Thread {
             number = Math.random();
             vector.setElement(number, i);
             System.out.println("Write: " + number + " to position " + i + '\n');
-            try {
+            /*try {
                 sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 }

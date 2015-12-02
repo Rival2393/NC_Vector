@@ -25,8 +25,17 @@ public class LinkedVector implements Vector, Cloneable, Serializable {
         public Node(){};
     }
 
-    public LinkedVector()
+    public LinkedVector(int size)
     {
+        head = new Node();
+        head.next = head;
+        head.previous = head;
+        this.size = size;
+        for(int i = 0; i < size; i++)
+            this.addElement(0.0);
+    }
+
+    public LinkedVector(){
         head = new Node();
         head.next = head;
         head.previous = head;

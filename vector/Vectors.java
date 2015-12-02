@@ -1,14 +1,30 @@
 package vector;
 
-import vector.impl.ArrayVector;
+import vector.factory.ArrayVectorFactory;
+import vector.factory.VectorFactory;
 
 import java.io.*;
+import java.util.StringTokenizer;
 
 /**
  * Created by Dima on 07.10.2015.
  */
 public class Vectors
 {
+    private static VectorFactory factory = new ArrayVectorFactory();
+
+    public static Vector createInstance(int size){
+        return factory.getNewVector(size);
+    }
+
+    public static Vector createInstance(){
+        return factory.getNewVector();
+    }
+
+    public static void setFactory(VectorFactory incomingFactory) {
+        factory = incomingFactory;
+    }
+
     public static void bubbleSort(Vector vector)
     {
         for(int i=0; i<vector.getSize()-1; i++)
@@ -23,45 +39,54 @@ public class Vectors
             }
     }
 
-    public static void outputVector(Vector v, OutputStream out) throws IOException
-    {
-        DataOutputStream dataOut = new DataOutputStream(out);
-        dataOut.writeInt(v.getSize());
-        for(int i = 0; i < v.getSize(); i++)
-        {
-            dataOut.writeDouble(v.getElement(i));
+    public static void outputVector(Vector v, OutputStream out) throws IOException {
+        DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(out));
+        dos.writeInt(v.getSize());
+        for (int i = 0; i < v.getSize(); i++) {
+            dos.writeDouble(v.getElement(i));
         }
+        dos.flush();
     }
 
+
     public static Vector inputVector(InputStream in) throws IOException {
-        DataInputStream dataIn = new DataInputStream(in);
-        Vector vector = new ArrayVector(dataIn.readInt());
-        for (int i = 0; i < vector.getSize(); i++)
-        {
-            vector.setElement(dataIn.readDouble(), i);
+        DataInputStream dis = new DataInputStream((in));
+        int size = dis.readInt();
+        double[] data = new double[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = dis.readDouble();
         }
+        Vector vector = createInstance(data.length);
+        vector.fillFromMass(data);
         return vector;
     }
 
     public static void writeVector(Vector v, Writer out) throws IOException {
-        PrintWriter outWriter = new PrintWriter(out);
-        outWriter.print(v.getSize());
-
-        for(int i = 0; i < v.getSize(); i++)
-        {
-            outWriter.append(' ');
-            outWriter.print(v.getElement(i));
+        StringBuilder sb = new StringBuilder();
+        PrintWriter pw = new PrintWriter(out);
+        sb.append(v.getSize());
+        for (int i = 0; i < v.getSize(); i++) {
+            sb.append(' ').append(v.getElement(i));
         }
-        outWriter.println();
-
+        pw.println(sb.toString());
+        pw.flush();
     }
 
     public static Vector readVector(Reader in) throws IOException {
-        StreamTokenizer tokenizer = new StreamTokenizer(in);
-        Vector vector = new ArrayVector(((int)tokenizer.nval));
-        tokenizer.nextToken();
-        while (tokenizer.nextToken()!= StreamTokenizer.TT_EOF)
-            vector.addElement(tokenizer.nval);
+        double[] data;
+        StringBuilder sb = new StringBuilder();
+        char c;
+        while ((c = (char) in.read()) != '\n') {
+            sb.append(c);
+        }
+        StringTokenizer st = new StringTokenizer(sb.toString());
+        data = new double[Integer.parseInt(st.nextToken())];
+        int i = 0;
+        while (st.hasMoreTokens()) {
+            data[i++] = Double.parseDouble(st.nextToken());
+        }
+        Vector vector = createInstance(data.length);
+        vector.fillFromMass(data);
         return vector;
     }
 }

@@ -19,6 +19,10 @@ public class ArrayVector implements Vector, Cloneable, Serializable
         data = new double[size];
     }
 
+    public ArrayVector(double[] data) {
+        fillFromMass(data);
+    }
+
     public void setElement(double element, int index)
     {
         try
